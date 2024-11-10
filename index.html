@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualizador de Estructura para IA</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+  <header>
+    <img src="/images/logo.webp" alt="Logo" class="logo">
+    <h1 class="title">Explorador de Estructura para IA</h1>
+    <p class="description">
+        Arrastra una carpeta para generar su estructura en un formato optimizado para Inteligencia Artificial.
+        Ideal para documentar y compartir estructuras de proyectos con ChatGPT y otras IAs.
+    </p>
+  </header>
+
+  <div id="drop-zone" class="drop-zone">
+    <i class="fas fa-folder-open"></i>
+    <p>Arrastra tu carpeta aquí</p>
+    <span class="drop-zone__hint">Generaremos una estructura compatible con IA</span>
+  </div>
+
+  <div id="result-container" class="result-container hidden">
+    <pre id="structure-output" class="structure-output"></pre>
+  </div>
+
+  <footer class="footer">
+    <p>Desarrollado con ❤️ por <a href="https://sientelared.com" target="_blank">Carlos Sánchez</a></p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

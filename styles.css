@@ -1,0 +1,265 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .drop-zone {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+    margin: 2rem auto;
+    max-width: 600px;
+    cursor: pointer;
+  }
+  
+  .drop-zone:hover {
+    border-color: #007bff;
+    background: #f1f7ff;
+  }
+  
+  .drop-zone i {
+    font-size: 3rem;
+    color: #666;
+    margin-bottom: 1rem;
+  }
+  
+  .drop-zone p {
+    font-size: 1.2rem;
+    margin: 0.5rem 0;
+    color: #333;
+  }
+  
+  .drop-zone__hint {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .drop-zone.dragover {
+    border-color: #28a745;
+    background: #e8f5e9;
+  }
+  
+  .file-structure {
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .file-item {
+    margin-left: 20px;
+  }
+  
+  .folder-name, .file-name {
+    font-weight: bold;
+  }
+  
+  .logo {
+    max-width: 200px;
+    display: block;
+    margin: 20px auto;
+    border-radius: 12px;
+  }
+  
+  header {
+    text-align: center;
+    padding: 2rem 1rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .title {
+    color: #333;
+    margin: 1.5rem 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+  
+  .description {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+  }
+  
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    margin-top: 3rem;
+    color: #666;
+    border-top: 1px solid #eee;
+  }
+  
+  .footer a {
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+  
+  .footer a:hover {
+    color: #007bff;
+  }
+  
+  @media (max-width: 768px) {
+    .title {
+      font-size: 2rem;
+    }
+  
+    .description {
+      font-size: 1rem;
+      padding: 0 1rem;
+    }
+  
+    .logo {
+      max-width: 150px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .title {
+      font-size: 1.5rem;
+    }
+  
+    header {
+      padding: 1rem;
+    }
+  }
+  
+  /* Estilos para el contenedor de resultados */
+  .result-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .result-container.hidden {
+    display: none;
+  }
+  
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    border-radius: 8px 8px 0 0;
+  }
+  
+  .format-select {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    font-size: 0.9rem;
+  }
+  
+  .copy-btn {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.3s ease;
+  }
+  
+  .copy-btn:hover {
+    background: #0056b3;
+  }
+  
+  .structure-output {
+    min-height: 300px;
+    max-height: 600px;
+    width: 100%;
+    padding: 20px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: auto;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    margin-top: 15px;
+  }
+  
+  .formats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .format-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .format-section h3 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #dee2e6;
+    color: #495057;
+  }
+  
+  .format-output {
+    background: white;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    overflow: auto;
+    max-height: 400px;
+    margin: 0;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  .format-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #dee2e6;
+  }
+  
+  .format-header h3 {
+    margin: 0;
+    color: #495057;
+  }
+  
+  .copy-btn {
+    background: transparent;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+  
+  .copy-btn:hover {
+    background: #e9ecef;
+    color: #212529;
+  }
+  
+  .copy-btn.copied {
+    color: #28a745;
+    background: #e9ecef;
+  }
+  
