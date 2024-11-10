@@ -14,11 +14,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     dropArea.addEventListener('drop', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         dropArea.classList.remove('dragover');
-        const files = Array.from(e.dataTransfer.files);
-        handleFiles(files);
-        resultContainer.classList.remove('hidden');
-        structureOutput.innerHTML = generateAllFormats(files);
+        
+        const items = e.dataTransfer.items;
+        if (items) {
+            // Usar DataTransferItemList interface para acceder a los archivos
+            const files = [];
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                if (item.kind === 'file') {
+                    const entry = item.webkitGetAsEntry();
+                    if (entry && entry.isDirectory) {
+                        console.log('Carpeta detectada:', entry.name);
+                        const directoryReader = entry.createReader();
+                        readDirectoryContents(directoryReader, files);
+                    }
+                }
+            }
+        }
     });
 
     // Añadir funcionalidad de click para abrir explorador
@@ -37,33 +51,76 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function handleFiles(files) {
+    console.log('Archivos recibidos:', files);
     const structureOutput = document.getElementById('structure-output');
-    structureOutput.innerHTML = generateAllFormats(files);
+    structureOutput.innerHTML = '';
     
-    // Añadir event listeners a los botones de copiar
-    document.querySelectorAll('.copy-btn').forEach(button => {
-        button.addEventListener('click', async () => {
-            const format = button.dataset.format;
-            const formatSection = button.closest('.format-section');
-            const codeBlock = formatSection.querySelector('.format-output');
-            
-            try {
-                await navigator.clipboard.writeText(codeBlock.textContent);
-                
-                // Feedback visual
-                button.classList.add('copied');
-                const originalIcon = button.innerHTML;
-                button.innerHTML = '<i class="fas fa-check"></i>';
-                
-                setTimeout(() => {
-                    button.classList.remove('copied');
-                    button.innerHTML = originalIcon;
-                }, 2000);
-                
-            } catch (err) {
-                console.error('Error al copiar:', err);
+    // Filtrar archivos ocultos y carpetas .git
+    const filteredFiles = Array.from(files).filter(file => {
+        const path = file.webkitRelativePath || file.name;
+        return !path.includes('/.git/') && 
+               !path.includes('/.git') && 
+               !path.startsWith('.') &&
+               !path.split('/').some(part => part.startsWith('.'));
+    });
+
+    console.log('Archivos filtrados:', filteredFiles);
+
+    if (filteredFiles.length === 0) {
+        showError('No se encontraron archivos válidos. Por favor, arrastra una carpeta con archivos.');
+        return;
+    }
+
+    const structure = {};
+    filteredFiles.forEach(file => {
+        const path = file.webkitRelativePath || file.name;
+        console.log('Procesando archivo:', path);
+        
+        if (!path) {
+            console.warn('Archivo sin ruta:', file);
+            return;
+        }
+
+        const parts = path.split('/').filter(Boolean);
+        let current = structure;
+        
+        // Crear la estructura de carpetas
+        for (let i = 0; i < parts.length - 1; i++) {
+            const part = parts[i];
+            if (!current[part]) {
+                current[part] = {};
             }
-        });
+            current = current[part];
+        }
+        
+        // Añadir el archivo
+        const fileName = parts[parts.length - 1];
+        current[fileName] = {};
+    });
+
+    console.log('Estructura generada:', structure);
+    
+    // Generar la salida en todos los formatos
+    structureOutput.innerHTML = generateAllFormats(filteredFiles);
+    
+    // Mostrar el contenedor de resultados
+    document.getElementById('result-container').classList.remove('hidden');
+}
+
+function readDirectoryContents(directoryReader, files) {
+    directoryReader.readEntries((entries) => {
+        for (let entry of entries) {
+            if (entry.isDirectory) {
+                const subDirectoryReader = entry.createReader();
+                readDirectoryContents(subDirectoryReader, files);
+            } else {
+                entry.file((file) => {
+                    files.push(file);
+                    // Cuando tengamos todos los archivos, procesarlos
+                    handleFiles(files);
+                });
+            }
+        }
     });
 }
 
