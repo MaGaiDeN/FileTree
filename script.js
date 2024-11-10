@@ -125,56 +125,81 @@ function readDirectoryContents(directoryReader, files) {
 }
 
 function generateStructure(files) {
+    console.log('=== Generando estructura ===');
+    
     let output = '';
     output += '📁 FileTree/\n';
     
-    // Crear un mapa de archivos y carpetas
-    const fileMap = new Map();
+    // Crear un mapa de carpetas y archivos
+    const folderMap = new Map();
+    
+    // Primera pasada: identificar todas las carpetas únicas
     files.forEach(file => {
         const path = file.webkitRelativePath || file.name;
-        const parts = path.split('/').filter(part => part);
+        const parts = path.split('/').filter(Boolean);
         
-        if (parts.length === 1) {
-            // Archivo en la raíz
-            fileMap.set(path, { type: 'file', name: path });
-        } else {
-            // Archivo en subcarpeta
-            const folderPath = parts.slice(0, -1);
-            const fileName = parts[parts.length - 1];
-            const folderName = folderPath[folderPath.length - 1];
-            
-            if (!fileMap.has(folderName)) {
-                fileMap.set(folderName, { 
-                    type: 'folder', 
-                    name: folderName,
+        // Ignorar la carpeta raíz si es FileTree
+        if (parts[0] === 'FileTree') {
+            parts.shift();
+        }
+        
+        // Procesar cada nivel de carpeta
+        for (let i = 0; i < parts.length - 1; i++) {
+            const folderPath = parts.slice(0, i + 1).join('/');
+            if (!folderMap.has(folderPath)) {
+                folderMap.set(folderPath, {
+                    name: parts[i],
+                    level: i,
                     files: []
                 });
             }
-            fileMap.get(folderName).files.push(fileName);
+        }
+        
+        // Añadir el archivo a su carpeta correspondiente
+        const filePath = parts.slice(0, -1).join('/');
+        const fileName = parts[parts.length - 1];
+        
+        if (filePath === '') {
+            // Archivo en la raíz
+            output += `  📄 ${fileName}\n`;
+        } else {
+            // Añadir archivo a su carpeta
+            if (folderMap.has(filePath)) {
+                folderMap.get(filePath).files.push(fileName);
+            }
         }
     });
-
-    // Generar salida para archivos de raíz
-    Array.from(fileMap.values())
-        .filter(item => item.type === 'file')
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .forEach(file => {
-            output += `  📄 ${file.name}\n`;
+    
+    // Segunda pasada: generar la estructura
+    const processedFolders = new Set();
+    
+    // Ordenar carpetas por nivel y nombre
+    const sortedFolders = Array.from(folderMap.entries())
+        .sort(([pathA, dataA], [pathB, dataB]) => {
+            if (dataA.level !== dataB.level) {
+                return dataA.level - dataB.level;
+            }
+            return pathA.localeCompare(pathB);
         });
-
+    
     // Generar salida para carpetas y sus archivos
-    Array.from(fileMap.values())
-        .filter(item => item.type === 'folder')
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .forEach(folder => {
-            output += `  📁 ${folder.name}/\n`;
-            folder.files
-                .sort((a, b) => a.localeCompare(b))
-                .forEach(file => {
-                    output += `    📄 ${file}\n`;
-                });
-        });
-
+    sortedFolders.forEach(([path, data]) => {
+        if (!processedFolders.has(path)) {
+            const indent = '  '.repeat(data.level + 1);
+            output += `${indent}📁 ${data.name}/\n`;
+            
+            // Ordenar archivos alfabéticamente
+            data.files.sort((a, b) => a.localeCompare(b));
+            data.files.forEach(file => {
+                output += `${indent}  📄 ${file}\n`;
+            });
+            
+            processedFolders.add(path);
+        }
+    });
+    
+    console.log('=== Estructura generada ===');
+    console.log(output);
     return output;
 }
 
